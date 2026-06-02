@@ -214,9 +214,9 @@
 <script>
 // ── CONFIG ──────────────────────────────────────
 const COINS = {
-  BTC:  { id: 'btc-bitcoin',  symbol: 'BTC',  name: 'Bitcoin',  color: '#f7931a' },
-  ETH:  { id: 'eth-ethereum', symbol: 'ETH',  name: 'Ethereum', color: '#627eea' },
-  PAXG: { id: 'paxg-pax-gold',symbol: 'PAXG', name: 'PAX Gold', color: '#e6c840' }
+  BTC:  { id: 'BTC',  symbol: 'BTC',  name: 'Bitcoin',  color: '#f7931a' },
+  ETH:  { id: 'ETH',  symbol: 'ETH',  name: 'Ethereum', color: '#627eea' },
+  PAXG: { id: 'PAXG', symbol: 'PAXG', name: 'PAX Gold', color: '#e6c840' }
 };
 const MA_COLORS  = { MA7: '#58a6ff', MA25: '#f0883e', MA99: '#bc8cff' };
 const MA_PERIODS = { MA7: 7, MA25: 25, MA99: 99 };
@@ -236,17 +236,24 @@ function initDates() {
 }
 function fmtDate(d) { return d.toISOString().split('T')[0]; }
 
-// ── FETCH — Coinpaprika (gratis, sin clave, CORS ok) ──
-async function fetchPrices(coinId, startDate, endDate) {
-  const url = `https://api.coinpaprika.com/v1/coins/${coinId}/ohlcv/historical?start=${startDate}&end=${endDate}`;
-  const res = await fetch(url);
-  if (!res.ok) {
-    const txt = await res.text();
-    throw new Error(`API error ${res.status}: ${txt.slice(0,120)}`);
-  }
-  const data = await res.json();
-  if (!Array.isArray(data) || data.length === 0) throw new Error('Sin datos para el rango seleccionado.');
-  return data; // [{ time_open, time_close, open, high, low, close, volume }, ...]
+// ── FETCH — CryptoCompare (gratis, sin clave, CORS ok) ──
+async function fetchPrices(symbol, startDate, endDate) {
+  const start  = new Date(startDate);
+  const end    = new Date(endDate);
+  const days   = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+  const toTs   = Math.floor(end.getTime() / 1000);
+  const limit  = Math.min(days, 2000);
+
+  const url = `https://min-api.cryptocompare.com/data/v2/histoday?fsym=${symbol}&tsym=USD&limit=${limit}&toTs=${toTs}`;
+  const res  = await fetch(url);
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  const json = await res.json();
+  if (json.Response === 'Error') throw new Error(json.Message || 'Error al obtener datos.');
+
+  const startTs = Math.floor(start.getTime() / 1000);
+  const data = json.Data.Data.filter(d => d.time >= startTs && d.close > 0);
+  if (!data || data.length === 0) throw new Error('Sin datos para el rango seleccionado.');
+  return data; // [{ time, open, high, low, close, volumefrom, volumeto }, ...]
 }
 
 // ── MA ───────────────────────────────────────────
@@ -471,7 +478,7 @@ async function loadData() {
       cachedData[cacheKey]=raw;
     }
 
-    let dates  = raw.map(d => d.time_open.split('T')[0]);
+    let dates  = raw.map(d => new Date(d.time * 1000).toISOString().split('T')[0]);
     let prices = raw.map(d => d.close);
 
     const interval=document.getElementById('intervalSelect').value;
@@ -508,7 +515,7 @@ document.getElementById('btnPDF').addEventListener('click', async () => {
     doc.setTextColor(230,237,243); doc.setFontSize(20);
     doc.text(`${coin.name} (${coin.symbol}) — Análisis de Medias Móviles`,15,20);
     doc.setFontSize(9); doc.setTextColor(139,148,158);
-    doc.text(`Generado: ${new Date().toLocaleString('es-ES')} · Fuente: Coinpaprika API`,15,28);
+    doc.text(`Generado: ${new Date().toLocaleString('es-ES')} · Fuente: CryptoCompare API`,15,28);
     const canvas=await html2canvas(document.getElementById('chartCard'),{backgroundColor:'#161b22',scale:2,useCORS:true,logging:false});
     const imgData=canvas.toDataURL('image/png');
     const ratio=canvas.width/canvas.height, imgW=267, imgH=Math.min(imgW/ratio,120);
@@ -559,4 +566,4 @@ loadData();
 </script>
 </body>
 </html>
-   
+
