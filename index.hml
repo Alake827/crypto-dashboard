@@ -9,203 +9,51 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg:        #0d1117;
-      --surface:   #161b22;
-      --surface2:  #21262d;
-      --border:    #30363d;
-      --text:      #e6edf3;
-      --muted:     #8b949e;
-      --btc:       #f7931a;
-      --eth:       #627eea;
-      --paxg:      #e6c840;
-      --green:     #3fb950;
-      --red:       #f85149;
-      --ma7:       #58a6ff;
-      --ma25:      #f0883e;
-      --ma99:      #bc8cff;
-      --radius:    10px;
+      --bg: #0d1117; --surface: #161b22; --surface2: #21262d;
+      --border: #30363d; --text: #e6edf3; --muted: #8b949e;
+      --btc: #f7931a; --eth: #627eea; --paxg: #e6c840;
+      --green: #3fb950; --red: #f85149;
+      --ma7: #58a6ff; --ma25: #f0883e; --ma99: #bc8cff;
+      --radius: 10px;
     }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; min-height: 100vh; }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 14px;
-      min-height: 100vh;
-    }
-
-    /* ── HEADER ── */
-    header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 14px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 17px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-    }
-    .logo-icon { font-size: 22px; }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 700; }
     .subtitle { color: var(--muted); font-size: 12px; font-weight: 400; }
 
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* ── COIN TABS ── */
-    .coin-tabs {
-      display: flex;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 50px;
-      padding: 3px;
-      gap: 2px;
-    }
-    .coin-tab {
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      padding: 6px 18px;
-      border-radius: 50px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      transition: all .2s;
-      letter-spacing: 0.3px;
-    }
+    .coin-tabs { display: flex; background: var(--surface2); border: 1px solid var(--border); border-radius: 50px; padding: 3px; gap: 2px; }
+    .coin-tab { border: none; background: transparent; color: var(--muted); padding: 6px 18px; border-radius: 50px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all .2s; }
     .coin-tab:hover { color: var(--text); }
     .coin-tab.active[data-coin="BTC"] { background: var(--btc); color: #000; }
     .coin-tab.active[data-coin="ETH"] { background: var(--eth); color: #fff; }
     .coin-tab.active[data-coin="PAXG"] { background: var(--paxg); color: #000; }
 
-    /* ── MAIN CONTAINER ── */
-    main {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px 24px;
-    }
+    main { max-width: 1200px; margin: 0 auto; padding: 20px 24px; }
 
-    /* ── PRICE HERO ── */
-    .price-hero {
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .price-main {
-      font-size: 36px;
-      font-weight: 700;
-      letter-spacing: -1px;
-    }
-    .price-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-    }
+    .price-hero { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .price-main { font-size: 36px; font-weight: 700; letter-spacing: -1px; }
+    .price-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 13px; font-weight: 600; }
     .price-badge.up   { background: rgba(63,185,80,.15); color: var(--green); }
-    .price-badge.down { background: rgba(248,81,73,.15);  color: var(--red);   }
-    .price-range {
-      color: var(--muted);
-      font-size: 13px;
-      margin-left: auto;
-    }
+    .price-badge.down { background: rgba(248,81,73,.15);  color: var(--red); }
+    .price-range { color: var(--muted); font-size: 13px; margin-left: auto; }
 
-    /* ── CONTROLS ── */
-    .controls {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-    .control-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .control-label {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      white-space: nowrap;
-    }
-    .date-input {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text);
-      padding: 6px 10px;
-      font-size: 13px;
-      outline: none;
-      transition: border-color .2s;
-    }
+    .controls { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .control-group { display: flex; align-items: center; gap: 8px; }
+    .control-label { color: var(--muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; white-space: nowrap; }
+    .date-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 6px 10px; font-size: 13px; outline: none; transition: border-color .2s; }
     .date-input:focus { border-color: var(--ma7); }
-
-    .btn-apply {
-      background: var(--ma7);
-      border: none;
-      border-radius: 6px;
-      color: #000;
-      padding: 7px 16px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity .2s;
-    }
+    .btn-apply { background: var(--ma7); border: none; border-radius: 6px; color: #000; padding: 7px 16px; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity .2s; }
     .btn-apply:hover { opacity: .85; }
     .btn-apply:disabled { opacity: .4; cursor: not-allowed; }
-
     .divider { width: 1px; height: 28px; background: var(--border); }
 
-    /* MA toggles */
     .ma-toggles { display: flex; gap: 8px; }
-    .ma-toggle {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      cursor: pointer;
-      user-select: none;
-      font-size: 12px;
-      font-weight: 600;
-    }
+    .ma-toggle { display: flex; align-items: center; gap: 5px; cursor: pointer; user-select: none; font-size: 12px; font-weight: 600; }
     .ma-toggle input[type=checkbox] { display: none; }
-    .ma-dot {
-      width: 24px;
-      height: 14px;
-      border-radius: 7px;
-      border: 2px solid;
-      position: relative;
-      transition: all .2s;
-    }
-    .ma-dot::after {
-      content: '';
-      position: absolute;
-      top: 1px; left: 1px;
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      transition: all .2s;
-    }
+    .ma-dot { width: 24px; height: 14px; border-radius: 7px; border: 2px solid; position: relative; transition: all .2s; }
+    .ma-dot::after { content: ''; position: absolute; top: 1px; left: 1px; width: 8px; height: 8px; border-radius: 50%; transition: all .2s; }
     .ma-toggle.on .ma-dot::after { left: calc(100% - 9px); }
     .ma-toggle[data-ma="MA7"]  .ma-dot { border-color: var(--ma7);  background: rgba(88,166,255,.15); }
     .ma-toggle[data-ma="MA25"] .ma-dot { border-color: var(--ma25); background: rgba(240,136,62,.15); }
@@ -216,269 +64,92 @@
     .ma-toggle[data-ma="MA7"]  span { color: var(--ma7); }
     .ma-toggle[data-ma="MA25"] span { color: var(--ma25); }
     .ma-toggle[data-ma="MA99"] span { color: var(--ma99); }
-    .ma-toggle.off span { opacity: .4; }
-    .ma-toggle.off .ma-dot { opacity: .4; }
+    .ma-toggle.off span, .ma-toggle.off .ma-dot { opacity: .4; }
 
-    .interval-select {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text);
-      padding: 6px 10px;
-      font-size: 13px;
-      outline: none;
-      cursor: pointer;
-    }
+    .interval-select { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 6px 10px; font-size: 13px; outline: none; cursor: pointer; }
 
-    /* ── CHART CARD ── */
-    .chart-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 20px;
-      position: relative;
-    }
-    .chart-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--muted);
-      margin-bottom: 14px;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-    }
-    .chart-wrap {
-      position: relative;
-      height: 380px;
-    }
-    #loader {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: var(--surface);
-      border-radius: var(--radius);
-      z-index: 10;
-    }
-    .spinner {
-      width: 36px;
-      height: 36px;
-      border: 3px solid var(--border);
-      border-top-color: var(--ma7);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-      margin-bottom: 12px;
-    }
+    .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; position: relative; }
+    .chart-title { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 14px; text-transform: uppercase; letter-spacing: .5px; }
+    .chart-wrap { position: relative; height: 380px; }
+    #loader { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--surface); border-radius: var(--radius); z-index: 10; }
+    .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--ma7); border-radius: 50%; animation: spin .7s linear infinite; margin-bottom: 12px; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .loader-text { color: var(--muted); font-size: 13px; }
 
-    /* ── STATS ROW ── */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-    }
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
     .stat-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
     .stat-value { font-size: 16px; font-weight: 700; }
     .stat-value.up   { color: var(--green); }
-    .stat-value.down { color: var(--red);   }
-    .stat-value.neutral { color: var(--text); }
+    .stat-value.down { color: var(--red); }
     .stat-sub { color: var(--muted); font-size: 11px; margin-top: 3px; }
 
-    /* ── ANALYSIS PANEL ── */
-    .analysis-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px 24px;
-      margin-bottom: 20px;
-    }
-    .analysis-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-    .analysis-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 15px;
-      font-weight: 700;
-    }
-    .analysis-icon { font-size: 18px; }
-    .sentiment-badge {
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-    }
-    .sentiment-badge.alcista        { background: rgba(63,185,80,.2);  color: var(--green); border: 1px solid rgba(63,185,80,.3); }
-    .sentiment-badge.bajista        { background: rgba(248,81,73,.2);  color: var(--red);   border: 1px solid rgba(248,81,73,.3); }
-    .sentiment-badge.neutral        { background: rgba(139,148,158,.2); color: var(--muted); border: 1px solid rgba(139,148,158,.3); }
-    .sentiment-badge.fuertemente-alcista { background: rgba(63,185,80,.3);  color: #56d364; border: 1px solid rgba(63,185,80,.5); }
-    .sentiment-badge.fuertemente-bajista { background: rgba(248,81,73,.3);  color: #ff7b72; border: 1px solid rgba(248,81,73,.5); }
-
-    .analysis-body {
-      line-height: 1.75;
-      color: var(--text);
-      font-size: 14px;
-    }
+    .analysis-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 20px; }
+    .analysis-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .analysis-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; }
+    .sentiment-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+    .sentiment-badge.alcista              { background: rgba(63,185,80,.2);   color: var(--green); border: 1px solid rgba(63,185,80,.3); }
+    .sentiment-badge.bajista              { background: rgba(248,81,73,.2);   color: var(--red);   border: 1px solid rgba(248,81,73,.3); }
+    .sentiment-badge.neutral              { background: rgba(139,148,158,.2); color: var(--muted); border: 1px solid rgba(139,148,158,.3); }
+    .sentiment-badge.fuertemente-alcista  { background: rgba(63,185,80,.3);   color: #56d364;      border: 1px solid rgba(63,185,80,.5); }
+    .sentiment-badge.fuertemente-bajista  { background: rgba(248,81,73,.3);   color: #ff7b72;      border: 1px solid rgba(248,81,73,.5); }
+    .analysis-body { line-height: 1.75; color: var(--text); font-size: 14px; }
     .analysis-body strong { color: #fff; font-weight: 700; }
-    .analysis-body .tag-green { color: var(--green); font-weight: 600; }
-    .analysis-body .tag-red   { color: var(--red);   font-weight: 600; }
-    .analysis-body .tag-blue  { color: var(--ma7);   font-weight: 600; }
-    .analysis-body .tag-orange { color: var(--ma25); font-weight: 600; }
-    .analysis-body .tag-purple { color: var(--ma99); font-weight: 600; }
+    .tag-green  { color: var(--green);  font-weight: 600; }
+    .tag-red    { color: var(--red);    font-weight: 600; }
+    .tag-blue   { color: var(--ma7);    font-weight: 600; }
+    .tag-orange { color: var(--ma25);   font-weight: 600; }
+    .tag-purple { color: var(--ma99);   font-weight: 600; }
+    .analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+    .analysis-section-title { font-size: 12px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+    .analysis-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; font-size: 13px; }
+    .analysis-bullet { width: 6px; height: 6px; border-radius: 50%; background: var(--ma7); margin-top: 6px; flex-shrink: 0; }
 
-    .analysis-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-    }
-    .analysis-section-title {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      color: var(--muted);
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-    .analysis-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      margin-bottom: 6px;
-      font-size: 13px;
-    }
-    .analysis-bullet {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--ma7);
-      margin-top: 6px;
-      flex-shrink: 0;
-    }
-
-    /* ── EXPORT SECTION ── */
-    .export-bar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      justify-content: flex-end;
-      margin-bottom: 24px;
-    }
-    .btn-export {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      padding: 9px 18px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all .2s;
-    }
+    .export-bar { display: flex; align-items: center; gap: 12px; justify-content: flex-end; margin-bottom: 24px; }
+    .btn-export { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 9px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; }
     .btn-export:hover { border-color: var(--ma7); color: var(--ma7); }
-    .btn-export svg { flex-shrink: 0; }
+    .btn-export:disabled { opacity: .4; cursor: not-allowed; }
 
-    /* ── ERROR ── */
-    .error-box {
-      background: rgba(248,81,73,.1);
-      border: 1px solid rgba(248,81,73,.3);
-      border-radius: var(--radius);
-      padding: 14px 18px;
-      color: var(--red);
-      font-size: 13px;
-      display: none;
-      margin-bottom: 16px;
-    }
+    .error-box { background: rgba(248,81,73,.1); border: 1px solid rgba(248,81,73,.3); border-radius: var(--radius); padding: 14px 18px; color: var(--red); font-size: 13px; display: none; margin-bottom: 16px; }
 
-    /* ── LEGEND ── */
-    .legend {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .legend-line {
-      width: 24px;
-      height: 2px;
-      border-radius: 2px;
-    }
-    .legend-line.dashed { background: repeating-linear-gradient(to right, currentColor 0 5px, transparent 5px 9px); }
+    .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+    .legend-line { width: 24px; height: 2px; border-radius: 2px; }
 
-    /* ── PRINT STYLES ── */
     @media print {
       body { background: #fff; color: #111; }
-      header, .controls, .coin-tabs, .export-bar, .btn-export { display: none !important; }
-      .chart-card, .analysis-card, .stat-card {
-        background: #fff;
-        border: 1px solid #ddd;
-        break-inside: avoid;
-      }
-      .stat-label, .analysis-section-title { color: #555; }
-      .muted, .subtitle { color: #666; }
+      header, .controls, .coin-tabs, .export-bar { display: none !important; }
+      .chart-card, .analysis-card, .stat-card { background: #fff; border: 1px solid #ddd; break-inside: avoid; }
       main { padding: 0; max-width: 100%; }
     }
   </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="logo">
-    <span class="logo-icon">📈</span>
+    <span>📈</span>
     <div>
       <div>Crypto MA Dashboard</div>
-      <div class="subtitle">Medias Móviles en tiempo real — BTC · ETH · PAXG</div>
+      <div class="subtitle">Medias Móviles en tiempo real · BTC · ETH · PAXG</div>
     </div>
   </div>
-  <div class="header-right">
-    <div class="coin-tabs">
-      <button class="coin-tab active" data-coin="BTC">BTC</button>
-      <button class="coin-tab" data-coin="ETH">ETH</button>
-      <button class="coin-tab" data-coin="PAXG">PAXG</button>
-    </div>
+  <div class="coin-tabs">
+    <button class="coin-tab active" data-coin="BTC">BTC</button>
+    <button class="coin-tab" data-coin="ETH">ETH</button>
+    <button class="coin-tab" data-coin="PAXG">PAXG</button>
   </div>
 </header>
 
 <main>
-  <!-- ERROR BOX -->
   <div class="error-box" id="errorBox"></div>
 
-  <!-- PRICE HERO -->
-  <div class="price-hero" id="priceHero">
+  <div class="price-hero">
     <div class="price-main" id="priceMain">—</div>
     <div class="price-badge" id="priceBadge">—</div>
     <div class="price-range" id="priceRange"></div>
   </div>
 
-  <!-- CONTROLS -->
   <div class="controls">
     <div class="control-group">
       <span class="control-label">Desde</span>
@@ -489,9 +160,7 @@
       <input type="date" class="date-input" id="dateTo" />
     </div>
     <button class="btn-apply" id="btnApply">Aplicar</button>
-
     <div class="divider"></div>
-
     <div class="control-group">
       <span class="control-label">Intervalo</span>
       <select class="interval-select" id="intervalSelect">
@@ -499,95 +168,57 @@
         <option value="weekly">Semanal</option>
       </select>
     </div>
-
     <div class="divider"></div>
-
     <div class="control-group">
       <span class="control-label">Medias Móviles</span>
       <div class="ma-toggles">
-        <label class="ma-toggle on" data-ma="MA7">
-          <input type="checkbox" id="toggleMA7" checked>
-          <div class="ma-dot"></div>
-          <span>MA7</span>
-        </label>
-        <label class="ma-toggle on" data-ma="MA25">
-          <input type="checkbox" id="toggleMA25" checked>
-          <div class="ma-dot"></div>
-          <span>MA25</span>
-        </label>
-        <label class="ma-toggle on" data-ma="MA99">
-          <input type="checkbox" id="toggleMA99" checked>
-          <div class="ma-dot"></div>
-          <span>MA99</span>
-        </label>
+        <label class="ma-toggle on" data-ma="MA7"><input type="checkbox" id="toggleMA7" checked><div class="ma-dot"></div><span>MA7</span></label>
+        <label class="ma-toggle on" data-ma="MA25"><input type="checkbox" id="toggleMA25" checked><div class="ma-dot"></div><span>MA25</span></label>
+        <label class="ma-toggle on" data-ma="MA99"><input type="checkbox" id="toggleMA99" checked><div class="ma-dot"></div><span>MA99</span></label>
       </div>
     </div>
   </div>
 
-  <!-- CHART CARD -->
   <div class="chart-card" id="chartCard">
     <div class="chart-title" id="chartTitle">Precio y Medias Móviles</div>
     <div class="chart-wrap">
-      <div id="loader">
-        <div class="spinner"></div>
-        <div class="loader-text" id="loaderText">Obteniendo datos de mercado…</div>
-      </div>
+      <div id="loader"><div class="spinner"></div><div class="loader-text" id="loaderText">Obteniendo datos de mercado…</div></div>
       <canvas id="priceChart"></canvas>
     </div>
     <div class="legend" id="chartLegend"></div>
   </div>
 
-  <!-- STATS ROW -->
   <div class="stats-row" id="statsRow"></div>
 
-  <!-- ANALYSIS CARD -->
   <div class="analysis-card" id="analysisCard" style="display:none">
     <div class="analysis-header">
-      <div class="analysis-title">
-        <span class="analysis-icon">🤖</span>
-        Análisis Automático — <span id="analysisCoin">BTC</span>
-      </div>
+      <div class="analysis-title">🤖 Análisis Automático — <span id="analysisCoin"></span></div>
       <div class="sentiment-badge" id="sentimentBadge">—</div>
     </div>
     <div class="analysis-body" id="analysisBody"></div>
     <div class="analysis-grid" id="analysisGrid"></div>
   </div>
 
-  <!-- EXPORT BAR -->
   <div class="export-bar">
     <button class="btn-export" id="btnPDF">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14,2 14,8 20,8"/>
-        <line x1="16" y1="13" x2="8" y2="13"/>
-        <line x1="16" y1="17" x2="8" y2="17"/>
-        <polyline points="10,9 9,9 8,9"/>
-      </svg>
-      Exportar PDF al Escritorio
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Exportar PDF
     </button>
     <button class="btn-export" id="btnPrint">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="6,9 6,2 18,2 18,9"/>
-        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-        <rect x="6" y="14" width="12" height="8"/>
-      </svg>
-      Imprimir / Guardar PDF
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 6,2 18,2 18,9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Imprimir / PDF
     </button>
   </div>
-
 </main>
 
 <script>
-// ═══════════════════════════════════════════════
-//  CONFIG
-// ═══════════════════════════════════════════════
+// ── CONFIG ──────────────────────────────────────
 const COINS = {
-  BTC:  { id: 'bitcoin',  symbol: 'BTC',  name: 'Bitcoin',  color: '#f7931a' },
-  ETH:  { id: 'ethereum', symbol: 'ETH',  name: 'Ethereum', color: '#627eea' },
-  PAXG: { id: 'pax-gold', symbol: 'PAXG', name: 'PAX Gold',  color: '#e6c840' }
+  BTC:  { id: 'BTC',  symbol: 'BTC',  name: 'Bitcoin',  color: '#f7931a' },
+  ETH:  { id: 'ETH',  symbol: 'ETH',  name: 'Ethereum', color: '#627eea' },
+  PAXG: { id: 'PAXG', symbol: 'PAXG', name: 'PAX Gold', color: '#e6c840' }
 };
-
-const MA_COLORS = { MA7: '#58a6ff', MA25: '#f0883e', MA99: '#bc8cff' };
+const MA_COLORS  = { MA7: '#58a6ff', MA25: '#f0883e', MA99: '#bc8cff' };
 const MA_PERIODS = { MA7: 7, MA25: 25, MA99: 99 };
 
 let currentCoin = 'BTC';
@@ -595,39 +226,36 @@ let chartInstance = null;
 let cachedData = {};
 let maToggles = { MA7: true, MA25: true, MA99: true };
 
-// ═══════════════════════════════════════════════
-//  DATE INIT
-// ═══════════════════════════════════════════════
+// ── DATES ────────────────────────────────────────
 function initDates() {
   const today = new Date();
   const from  = new Date(today);
   from.setDate(from.getDate() - 90);
-  document.getElementById('dateTo').value   = fmt(today);
-  document.getElementById('dateFrom').value = fmt(from);
+  document.getElementById('dateTo').value   = fmtDate(today);
+  document.getElementById('dateFrom').value = fmtDate(from);
 }
+function fmtDate(d) { return d.toISOString().split('T')[0]; }
 
-function fmt(d) {
-  return d.toISOString().split('T')[0];
-}
+// ── FETCH — Binance via corsproxy.io (gratis, sin clave, todos los navegadores) ──
+async function fetchPrices(symbol, startDate, endDate) {
+  const startTs = new Date(startDate).getTime();
+  const endTs   = new Date(endDate).getTime() + 86399999;
 
-function toUnix(dateStr) {
-  return Math.floor(new Date(dateStr + 'T00:00:00').getTime() / 1000);
-}
+  const binanceUrl = `https://api.binance.com/api/v3/klines?symbol=${symbol}USDT&interval=1d&startTime=${startTs}&endTime=${endTs}&limit=1000`;
+  const proxyUrl   = `https://corsproxy.io/?${encodeURIComponent(binanceUrl)}`;
 
-// ═══════════════════════════════════════════════
-//  FETCH DATA — CoinGecko public API
-// ═══════════════════════════════════════════════
-async function fetchPrices(coinId, fromUnix, toUnix) {
-  const url = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart/range?vs_currency=usd&from=${fromUnix}&to=${toUnix}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`CoinGecko error: ${res.status}`);
+  let res = await fetch(proxyUrl);
+  // fallback: intentar directo si el proxy falla
+  if (!res.ok) res = await fetch(binanceUrl);
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+
   const data = await res.json();
-  return data.prices; // [[timestamp_ms, price], ...]
+  if (!Array.isArray(data) || data.length === 0) throw new Error('Sin datos para el rango seleccionado. Intentá un rango más amplio.');
+  return data;
+  // Formato Binance: [[openTime, open, high, low, close, vol, closeTime, ...], ...]
 }
 
-// ═══════════════════════════════════════════════
-//  MOVING AVERAGE
-// ═══════════════════════════════════════════════
+// ── MA ───────────────────────────────────────────
 function calcMA(prices, period) {
   return prices.map((_, i) => {
     if (i < period - 1) return null;
@@ -636,579 +264,302 @@ function calcMA(prices, period) {
   });
 }
 
-// ═══════════════════════════════════════════════
-//  FORMAT HELPERS
-// ═══════════════════════════════════════════════
-function fmtPrice(v, coin) {
+// ── FORMAT ───────────────────────────────────────
+function fmtPrice(v) {
   if (v == null) return '—';
-  if (coin === 'PAXG' || v > 500)  return '$' + v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-  if (v > 1)    return '$' + v.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 5});
+  if (v >= 1000) return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (v >= 1)    return '$' + v.toFixed(4);
   return '$' + v.toFixed(6);
 }
+function fmtPct(v) { return (v >= 0 ? '+' : '') + v.toFixed(2) + '%'; }
 
-function fmtPct(v) {
-  const sign = v >= 0 ? '+' : '';
-  return sign + v.toFixed(2) + '%';
-}
-
-// ═══════════════════════════════════════════════
-//  DOWNSAMPLE (for weekly view)
-// ═══════════════════════════════════════════════
+// ── DOWNSAMPLE ───────────────────────────────────
 function downsampleWeekly(dates, prices) {
-  const result = { dates: [], prices: [] };
+  const r = { dates: [], prices: [] };
   let lastWeek = null;
   dates.forEach((d, i) => {
-    const week = getWeek(new Date(d));
-    if (week !== lastWeek) {
-      result.dates.push(d);
-      result.prices.push(prices[i]);
-      lastWeek = week;
-    }
+    const w = getWeek(new Date(d));
+    if (w !== lastWeek) { r.dates.push(d); r.prices.push(prices[i]); lastWeek = w; }
   });
-  return result;
+  return r;
 }
-
 function getWeek(d) {
-  const jan1 = new Date(d.getFullYear(), 0, 1);
-  return Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+  const j = new Date(d.getFullYear(), 0, 1);
+  return Math.ceil(((d - j) / 86400000 + j.getDay() + 1) / 7);
 }
 
-// ═══════════════════════════════════════════════
-//  BUILD CHART
-// ═══════════════════════════════════════════════
+// ── CHART ────────────────────────────────────────
 function buildChart(labels, prices, ma7, ma25, ma99, coinColor) {
-  if (chartInstance) {
-    chartInstance.destroy();
-    chartInstance = null;
-  }
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
   const ctx = document.getElementById('priceChart').getContext('2d');
-
-  const gradient = ctx.createLinearGradient(0, 0, 0, 380);
-  gradient.addColorStop(0, coinColor + '33');
-  gradient.addColorStop(1, coinColor + '00');
-
+  const grad = ctx.createLinearGradient(0, 0, 0, 380);
+  grad.addColorStop(0, coinColor + '33');
+  grad.addColorStop(1, coinColor + '00');
   const datasets = [
-    {
-      label: 'Precio',
-      data: prices,
-      borderColor: coinColor,
-      backgroundColor: gradient,
-      borderWidth: 2,
-      fill: true,
-      pointRadius: prices.length > 100 ? 0 : 2,
-      tension: 0.3,
-      order: 4
-    }
+    { label: 'Precio', data: prices, borderColor: coinColor, backgroundColor: grad, borderWidth: 2, fill: true, pointRadius: prices.length > 100 ? 0 : 2, tension: 0.3, order: 4 }
   ];
-
   if (maToggles.MA7)  datasets.push({ label: 'MA7',  data: ma7,  borderColor: MA_COLORS.MA7,  borderWidth: 1.5, pointRadius: 0, fill: false, borderDash: [4,2], tension: 0.3, order: 3 });
   if (maToggles.MA25) datasets.push({ label: 'MA25', data: ma25, borderColor: MA_COLORS.MA25, borderWidth: 1.5, pointRadius: 0, fill: false, borderDash: [6,3], tension: 0.3, order: 2 });
   if (maToggles.MA99) datasets.push({ label: 'MA99', data: ma99, borderColor: MA_COLORS.MA99, borderWidth: 1.5, pointRadius: 0, fill: false, borderDash: [8,4], tension: 0.3, order: 1 });
-
   chartInstance = new Chart(ctx, {
     type: 'line',
     data: { labels, datasets },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
+      responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: '#1c2128',
-          borderColor: '#30363d',
-          borderWidth: 1,
-          titleColor: '#8b949e',
-          bodyColor: '#e6edf3',
-          padding: 12,
+          backgroundColor: '#1c2128', borderColor: '#30363d', borderWidth: 1,
+          titleColor: '#8b949e', bodyColor: '#e6edf3', padding: 12,
           callbacks: {
-            title: (items) => items[0].label,
-            label: (item) => {
-              if (item.raw == null) return null;
-              return `  ${item.dataset.label}: $${item.raw.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            }
+            label: (item) => item.raw == null ? null : `  ${item.dataset.label}: ${fmtPrice(item.raw)}`
           }
         }
       },
       scales: {
-        x: {
-          grid: { color: 'rgba(48,54,61,0.6)' },
-          ticks: {
-            color: '#8b949e',
-            maxTicksLimit: 8,
-            maxRotation: 0
-          }
-        },
-        y: {
-          position: 'right',
-          grid: { color: 'rgba(48,54,61,0.6)' },
-          ticks: {
-            color: '#8b949e',
-            callback: (v) => '$' + (v >= 1000 ? (v/1000).toFixed(1) + 'k' : v.toFixed(0))
-          }
-        }
+        x: { grid: { color: 'rgba(48,54,61,0.6)' }, ticks: { color: '#8b949e', maxTicksLimit: 8, maxRotation: 0 } },
+        y: { position: 'right', grid: { color: 'rgba(48,54,61,0.6)' }, ticks: { color: '#8b949e', callback: v => '$' + (v >= 1000 ? (v/1000).toFixed(1)+'k' : v.toFixed(0)) } }
       }
     }
   });
 }
 
-// ═══════════════════════════════════════════════
-//  STATS ROW
-// ═══════════════════════════════════════════════
-function renderStats(prices, dates, ma7, ma25, ma99, coin) {
-  const last  = prices[prices.length - 1];
-  const first = prices[0];
-  const high  = Math.max(...prices);
-  const low   = Math.min(...prices);
-  const pct   = (last - first) / first * 100;
-  const lma7  = ma7.filter(v => v != null).pop();
-  const lma25 = ma25.filter(v => v != null).pop();
-  const lma99 = ma99.filter(v => v != null).pop();
-
+// ── STATS ────────────────────────────────────────
+function renderStats(prices, dates, ma7, ma25, ma99) {
+  const last = prices[prices.length-1], first = prices[0];
+  const high = Math.max(...prices), low = Math.min(...prices);
+  const pct  = (last - first) / first * 100;
+  const lma7 = ma7.filter(v=>v!=null).pop(), lma25 = ma25.filter(v=>v!=null).pop(), lma99 = ma99.filter(v=>v!=null).pop();
   const stats = [
-    { label: 'Precio actual', value: fmtPrice(last, coin), cls: 'neutral', sub: '' },
-    { label: 'Variación período', value: fmtPct(pct), cls: pct >= 0 ? 'up' : 'down', sub: `${dates[0]} → ${dates[dates.length-1]}` },
-    { label: 'Máximo período',  value: fmtPrice(high, coin), cls: 'up',   sub: '' },
-    { label: 'Mínimo período',  value: fmtPrice(low, coin),  cls: 'down', sub: '' },
-    { label: 'MA7',  value: fmtPrice(lma7, coin),  cls: last > lma7  ? 'up' : 'down', sub: last > lma7  ? 'Precio > MA7'  : 'Precio < MA7' },
-    { label: 'MA25', value: fmtPrice(lma25, coin), cls: last > lma25 ? 'up' : 'down', sub: last > lma25 ? 'Precio > MA25' : 'Precio < MA25' },
-    { label: 'MA99', value: fmtPrice(lma99, coin), cls: last > lma99 ? 'up' : 'down', sub: last > lma99 ? 'Precio > MA99' : 'Precio < MA99' }
+    { label: 'Precio actual',   value: fmtPrice(last),  cls: 'neutral', sub: '' },
+    { label: 'Variación total', value: fmtPct(pct),     cls: pct>=0?'up':'down', sub: `${dates[0]} → ${dates[dates.length-1]}` },
+    { label: 'Máximo período',  value: fmtPrice(high),  cls: 'up',   sub: '' },
+    { label: 'Mínimo período',  value: fmtPrice(low),   cls: 'down', sub: '' },
+    { label: 'MA7',  value: fmtPrice(lma7),  cls: last>lma7 ?'up':'down', sub: last>lma7 ?'Precio > MA7' :'Precio < MA7'  },
+    { label: 'MA25', value: fmtPrice(lma25), cls: last>lma25?'up':'down', sub: last>lma25?'Precio > MA25':'Precio < MA25' },
+    { label: 'MA99', value: fmtPrice(lma99), cls: last>lma99?'up':'down', sub: last>lma99?'Precio > MA99':'Precio < MA99' }
   ];
-
-  document.getElementById('statsRow').innerHTML = stats.map(s => `
+  document.getElementById('statsRow').innerHTML = stats.map(s=>`
     <div class="stat-card">
       <div class="stat-label">${s.label}</div>
       <div class="stat-value ${s.cls}">${s.value}</div>
-      ${s.sub ? `<div class="stat-sub">${s.sub}</div>` : ''}
-    </div>
-  `).join('');
+      ${s.sub?`<div class="stat-sub">${s.sub}</div>`:''}
+    </div>`).join('');
 }
 
-// ═══════════════════════════════════════════════
-//  AUTO ANALYSIS
-// ═══════════════════════════════════════════════
+// ── ANALYSIS ─────────────────────────────────────
 function generateAnalysis(prices, dates, ma7, ma25, ma99, coin) {
-  const last   = prices[prices.length - 1];
-  const first  = prices[0];
-  const high   = Math.max(...prices);
-  const low    = Math.min(...prices);
-  const pct    = ((last - first) / first * 100);
-  const lma7   = ma7.filter(v => v != null).pop();
-  const lma25  = ma25.filter(v => v != null).pop();
-  const lma99  = ma99.filter(v => v != null).pop();
+  const last=prices[prices.length-1], first=prices[0];
+  const high=Math.max(...prices), low=Math.min(...prices);
+  const pct=((last-first)/first*100);
+  const lma7=ma7.filter(v=>v!=null).pop(), lma25=ma25.filter(v=>v!=null).pop(), lma99=ma99.filter(v=>v!=null).pop();
 
-  const fv = (v) => fmtPrice(v, coin);
-
-  // Trend determination
-  let trendKey = 'neutral';
-  let trendText = 'lateral / consolidación';
-  if (lma7 && lma25 && lma99) {
-    if (last > lma7 && lma7 > lma25 && lma25 > lma99) {
-      trendKey = 'fuertemente-alcista'; trendText = '🟢 Fuertemente Alcista';
-    } else if (last > lma7 && lma7 > lma25) {
-      trendKey = 'alcista'; trendText = '🟢 Alcista';
-    } else if (last < lma7 && lma7 < lma25 && lma25 < lma99) {
-      trendKey = 'fuertemente-bajista'; trendText = '🔴 Fuertemente Bajista';
-    } else if (last < lma7 && lma7 < lma25) {
-      trendKey = 'bajista'; trendText = '🔴 Bajista';
-    } else {
-      trendKey = 'neutral'; trendText = '⚪ Lateral / Neutral';
-    }
-  } else if (lma7 && lma25) {
-    if (last > lma7 && lma7 > lma25) { trendKey = 'alcista'; trendText = '🟢 Alcista'; }
-    else if (last < lma7 && lma7 < lma25) { trendKey = 'bajista'; trendText = '🔴 Bajista'; }
+  let trendKey='neutral', trendText='⚪ Lateral / Neutral';
+  if(lma7&&lma25&&lma99){
+    if(last>lma7&&lma7>lma25&&lma25>lma99){trendKey='fuertemente-alcista';trendText='🟢 Fuertemente Alcista';}
+    else if(last>lma7&&lma7>lma25){trendKey='alcista';trendText='🟢 Alcista';}
+    else if(last<lma7&&lma7<lma25&&lma25<lma99){trendKey='fuertemente-bajista';trendText='🔴 Fuertemente Bajista';}
+    else if(last<lma7&&lma7<lma25){trendKey='bajista';trendText='🔴 Bajista';}
   }
 
-  // Crossover detection (last 14 points)
-  let crossoverAlert = '';
-  const len = ma7.length;
-  for (let i = Math.max(1, len - 14); i < len; i++) {
-    if (ma7[i] != null && ma25[i] != null && ma7[i-1] != null && ma25[i-1] != null) {
-      if (ma7[i-1] <= ma25[i-1] && ma7[i] > ma25[i]) {
-        crossoverAlert = `<span class="tag-green">⚡ Cruce Dorado detectado</span> (MA7 cruzó al alza sobre MA25) — señal históricamente alcista. `;
-        break;
-      }
-      if (ma7[i-1] >= ma25[i-1] && ma7[i] < ma25[i]) {
-        crossoverAlert = `<span class="tag-red">⚡ Cruce de la Muerte detectado</span> (MA7 cruzó a la baja bajo MA25) — señal de debilidad. `;
-        break;
-      }
+  let crossoverAlert='';
+  for(let i=Math.max(1,ma7.length-14);i<ma7.length;i++){
+    if(ma7[i]!=null&&ma25[i]!=null&&ma7[i-1]!=null&&ma25[i-1]!=null){
+      if(ma7[i-1]<=ma25[i-1]&&ma7[i]>ma25[i]){crossoverAlert=`<span class="tag-green">⚡ Cruce Dorado</span> detectado (MA7 cruzó sobre MA25) — señal alcista. `;break;}
+      if(ma7[i-1]>=ma25[i-1]&&ma7[i]<ma25[i]){crossoverAlert=`<span class="tag-red">⚡ Cruce de la Muerte</span> detectado (MA7 cruzó bajo MA25) — señal bajista. `;break;}
     }
   }
 
-  // Recent momentum (last 7 points)
-  const recentPrices = prices.slice(-7);
-  const recentPct = ((recentPrices[recentPrices.length-1] - recentPrices[0]) / recentPrices[0] * 100);
+  const recent7=prices.slice(-7);
+  const rPct=((recent7[recent7.length-1]-recent7[0])/recent7[0]*100);
+  const diffs=prices.slice(1).map((p,i)=>Math.abs((p-prices[i])/prices[i]*100));
+  const vol=diffs.reduce((a,b)=>a+b,0)/diffs.length;
+  const volText=vol>5?'alta':vol>2?'moderada':'baja';
 
-  // Volatility
-  const diffs = prices.slice(1).map((p, i) => Math.abs((p - prices[i]) / prices[i] * 100));
-  const avgVolatility = diffs.reduce((a, b) => a + b, 0) / diffs.length;
-  const volText = avgVolatility > 5 ? 'alta' : avgVolatility > 2 ? 'moderada' : 'baja';
+  const relMA7  = lma7  ? (last>lma7  ?'<span class="tag-green">por encima</span>':'<span class="tag-red">por debajo</span>') : '—';
+  const relMA25 = lma25 ? (last>lma25 ?'<span class="tag-green">por encima</span>':'<span class="tag-red">por debajo</span>') : '—';
+  const relMA99 = lma99 ? (last>lma99 ?'<span class="tag-green">por encima</span>':'<span class="tag-red">por debajo</span>') : null;
 
-  // Price vs MAs
-  const relMA7  = lma7  ? (last > lma7  ? '<span class="tag-green">por encima</span>' : '<span class="tag-red">por debajo</span>') : '—';
-  const relMA25 = lma25 ? (last > lma25 ? '<span class="tag-green">por encima</span>' : '<span class="tag-red">por debajo</span>') : '—';
-  const relMA99 = lma99 ? (last > lma99 ? '<span class="tag-green">por encima</span>' : '<span class="tag-red">por debajo</span>') : null;
+  let mainText = `El precio de <strong>${COINS[coin].name}</strong> es <strong>${fmtPrice(last)}</strong>, `
+    +`situándose ${relMA7} de la <span class="tag-blue">MA7 (${fmtPrice(lma7)})</span>`
+    +(lma25?` y ${relMA25} de la <span class="tag-orange">MA25 (${fmtPrice(lma25)})</span>`:'')
+    +(lma99&&relMA99?`, y ${relMA99} de la <span class="tag-purple">MA99 (${fmtPrice(lma99)})</span>`:'')
+    +`. Variación del período: <strong class="${pct>=0?'tag-green':'tag-red'}">${fmtPct(pct)}</strong>. `;
 
-  // Build main paragraph
-  let mainText = `El precio actual de <strong>${COINS[coin].name}</strong> es <strong>${fv(last)}</strong>, `
-    + `situándose ${relMA7} de la <span class="tag-blue">MA7 (${fv(lma7)})</span>`
-    + (lma25 ? ` y ${relMA25} de la <span class="tag-orange">MA25 (${fv(lma25)})</span>` : '')
-    + (lma99 && relMA99 ? `, y ${relMA99} de la <span class="tag-purple">MA99 (${fv(lma99)})</span>` : '')
-    + `. `;
+  if(crossoverAlert) mainText+=crossoverAlert;
+  if(Math.abs(rPct)>3) mainText+=`Momentum 7d: <strong class="${rPct>=0?'tag-green':'tag-red'}">${fmtPct(rPct)}</strong>. `;
+  mainText+=`Volatilidad diaria promedio: <strong>${vol.toFixed(2)}%</strong> (${volText}).`;
 
-  mainText += `En el período analizado, <strong>${COINS[coin].name}</strong> registró una variación de `
-    + `<strong class="${pct >= 0 ? 'tag-green' : 'tag-red'}">${fmtPct(pct)}</strong>, `
-    + `con un máximo de ${fv(high)} y un mínimo de ${fv(low)}. `;
+  const maVals=[lma7,lma25,lma99].filter(v=>v!=null).sort((a,b)=>a-b);
+  const below=maVals.filter(v=>v<last), above=maVals.filter(v=>v>=last);
+  const supportText    = below.length ? `Soporte en medias: ${below.map(fmtPrice).join(' / ')}` : '';
+  const resistanceText = above.length ? `Resistencia por medias: ${above.map(fmtPrice).join(' / ')}` : '';
 
-  if (crossoverAlert) mainText += crossoverAlert;
-
-  mainText += `La volatilidad diaria promedio del período es <strong>${avgVolatility.toFixed(2)}%</strong> (${volText}). `;
-
-  if (Math.abs(recentPct) > 3) {
-    const dir7 = recentPct > 0 ? '<span class="tag-green">subida</span>' : '<span class="tag-red">caída</span>';
-    mainText += `En los últimos 7 días se observa una ${dir7} del <strong>${Math.abs(recentPct).toFixed(2)}%</strong>, `
-      + (Math.abs(recentPct) > 10 ? 'indicando un movimiento de fuerte momentum. ' : 'reflejando momentum moderado. ');
-  }
-
-  // Support / Resistance
-  const maVals = [lma7, lma25, lma99].filter(v => v != null).sort((a,b) => a-b);
-  let supportText = '';
-  let resistanceText = '';
-  if (maVals.length >= 2) {
-    const below = maVals.filter(v => v < last);
-    const above = maVals.filter(v => v >= last);
-    if (below.length) supportText = `Soporte clave en las medias: ${below.map(fv).join(' / ')}`;
-    if (above.length) resistanceText = `Resistencia por las medias: ${above.map(fv).join(' / ')}`;
-  }
-
-  // Outlook
-  let outlook = '';
-  if (trendKey === 'fuertemente-alcista') {
-    outlook = 'Las medias móviles están perfectamente alineadas al alza (MA7 > MA25 > MA99 > Precio). Esta configuración es la más alcista posible en análisis técnico de medias.';
-  } else if (trendKey === 'alcista') {
-    outlook = 'La estructura de medias indica tendencia alcista a corto plazo. Se recomienda vigilar si el precio mantiene soporte sobre las MAs.';
-  } else if (trendKey === 'fuertemente-bajista') {
-    outlook = 'Las medias forman una alineación bajista completa (MA7 < MA25 < MA99 < Precio). Señal de distribución o mercado bajista estructural.';
-  } else if (trendKey === 'bajista') {
-    outlook = 'La estructura de medias sugiere debilidad. Un rebote hacia la MA7 o MA25 podría actuar como resistencia.';
-  } else {
-    outlook = 'El precio se mueve entre las medias sin una dirección clara, indicando indecisión. Esperar ruptura con volumen confirmaría la próxima dirección.';
-  }
+  const outlookMap = {
+    'fuertemente-alcista': 'Medias perfectamente alineadas al alza (MA7 > MA25 > MA99). Configuración más alcista posible.',
+    'alcista':             'Estructura de corto plazo positiva. Vigilar soporte sobre las MAs para continuación.',
+    'fuertemente-bajista': 'Alineación bajista completa (MA7 < MA25 < MA99). Señal de distribución o tendencia bajista.',
+    'bajista':             'Medias muestran debilidad. Rebotes hacia MA7/MA25 podrían actuar como resistencia.',
+    'neutral':             'Precio entre las medias sin dirección clara. Esperar ruptura con volumen para confirmar tendencia.'
+  };
 
   return {
-    trendKey,
-    trendText,
-    mainText,
-    supportText,
-    resistanceText,
-    outlook,
+    trendKey, trendText, mainText, supportText, resistanceText,
+    outlook: outlookMap[trendKey],
     bullets: [
-      `Variación total del período: <strong class="${pct >= 0 ? 'tag-green' : 'tag-red'}">${fmtPct(pct)}</strong>`,
-      `Momentum 7d: <strong class="${recentPct >= 0 ? 'tag-green' : 'tag-red'}">${fmtPct(recentPct)}</strong>`,
-      `Volatilidad diaria avg: <strong>${avgVolatility.toFixed(2)}%</strong> (${volText})`,
+      `Variación total: <strong class="${pct>=0?'tag-green':'tag-red'}">${fmtPct(pct)}</strong>`,
+      `Momentum 7d: <strong class="${rPct>=0?'tag-green':'tag-red'}">${fmtPct(rPct)}</strong>`,
+      `Volatilidad avg: <strong>${vol.toFixed(2)}%</strong> (${volText})`,
       `Datos: ${dates.length} velas · ${dates[0]} → ${dates[dates.length-1]}`
     ]
   };
 }
 
-// ═══════════════════════════════════════════════
-//  RENDER ANALYSIS
-// ═══════════════════════════════════════════════
 function renderAnalysis(analysis, coin) {
-  const card = document.getElementById('analysisCard');
-  card.style.display = 'block';
-  document.getElementById('analysisCoin').textContent = COINS[coin].name;
-
-  const badge = document.getElementById('sentimentBadge');
-  badge.textContent = analysis.trendText;
-  badge.className = `sentiment-badge ${analysis.trendKey}`;
-
-  document.getElementById('analysisBody').innerHTML = analysis.mainText;
-
-  let gridHtml = '';
-  if (analysis.supportText || analysis.resistanceText || analysis.outlook) {
-    gridHtml = `
-      <div>
-        <div class="analysis-section-title">Niveles Clave</div>
-        ${analysis.supportText    ? `<div class="analysis-item"><div class="analysis-bullet" style="background:var(--green)"></div><div>${analysis.supportText}</div></div>` : ''}
-        ${analysis.resistanceText ? `<div class="analysis-item"><div class="analysis-bullet" style="background:var(--red)"></div><div>${analysis.resistanceText}</div></div>` : ''}
-        ${!analysis.supportText && !analysis.resistanceText ? '<div style="color:var(--muted);font-size:13px">Precio entre todas las medias.</div>' : ''}
-      </div>
-      <div>
-        <div class="analysis-section-title">Métricas del Período</div>
-        ${analysis.bullets.map(b => `<div class="analysis-item"><div class="analysis-bullet"></div><div>${b}</div></div>`).join('')}
-      </div>
-    `;
-    if (analysis.outlook) {
-      gridHtml += `</div><div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
-        <div class="analysis-section-title">Perspectiva Técnica</div>
-        <div style="font-size:13px;color:var(--text);line-height:1.7">${analysis.outlook}</div>
-      </div><div style="display:none">`;
-    }
-  }
-  document.getElementById('analysisGrid').innerHTML = gridHtml;
-}
-
-// ═══════════════════════════════════════════════
-//  LEGEND
-// ═══════════════════════════════════════════════
-function renderLegend(coin) {
-  const items = [
-    { color: COINS[coin].color, label: `Precio ${COINS[coin].symbol}`, dashed: false },
-    { color: MA_COLORS.MA7,  label: 'MA 7',  dashed: true },
-    { color: MA_COLORS.MA25, label: 'MA 25', dashed: true },
-    { color: MA_COLORS.MA99, label: 'MA 99', dashed: true }
-  ];
-  document.getElementById('chartLegend').innerHTML = items.map(i => `
-    <div class="legend-item">
-      <div class="legend-line ${i.dashed ? 'dashed' : ''}" style="background-color:${i.color};color:${i.color}"></div>
-      <span>${i.label}</span>
+  document.getElementById('analysisCard').style.display='block';
+  document.getElementById('analysisCoin').textContent=COINS[coin].name;
+  const badge=document.getElementById('sentimentBadge');
+  badge.textContent=analysis.trendText; badge.className=`sentiment-badge ${analysis.trendKey}`;
+  document.getElementById('analysisBody').innerHTML=analysis.mainText;
+  document.getElementById('analysisGrid').innerHTML=`
+    <div>
+      <div class="analysis-section-title">Niveles Clave</div>
+      ${analysis.supportText?`<div class="analysis-item"><div class="analysis-bullet" style="background:var(--green)"></div><div>${analysis.supportText}</div></div>`:''}
+      ${analysis.resistanceText?`<div class="analysis-item"><div class="analysis-bullet" style="background:var(--red)"></div><div>${analysis.resistanceText}</div></div>`:''}
     </div>
-  `).join('');
+    <div>
+      <div class="analysis-section-title">Métricas del Período</div>
+      ${analysis.bullets.map(b=>`<div class="analysis-item"><div class="analysis-bullet"></div><div>${b}</div></div>`).join('')}
+    </div>
+    <div style="grid-column:1/-1;padding-top:12px;border-top:1px solid var(--border)">
+      <div class="analysis-section-title">Perspectiva Técnica</div>
+      <div style="font-size:13px;line-height:1.7">${analysis.outlook}</div>
+    </div>`;
 }
 
-// ═══════════════════════════════════════════════
-//  PRICE HERO UPDATE
-// ═══════════════════════════════════════════════
+function renderLegend(coin) {
+  const items=[
+    {color:COINS[coin].color,label:`Precio ${COINS[coin].symbol}`},
+    {color:MA_COLORS.MA7,label:'MA 7'},{color:MA_COLORS.MA25,label:'MA 25'},{color:MA_COLORS.MA99,label:'MA 99'}
+  ];
+  document.getElementById('chartLegend').innerHTML=items.map(i=>`
+    <div class="legend-item">
+      <div class="legend-line" style="background:${i.color}"></div>
+      <span>${i.label}</span>
+    </div>`).join('');
+}
+
 function renderPriceHero(prices, dates, coin) {
-  const last  = prices[prices.length - 1];
-  const prev  = prices[prices.length - 2] || last;
-  const pct   = (last - prev) / prev * 100;
-  const total = ((last - prices[0]) / prices[0] * 100);
-
-  document.getElementById('priceMain').textContent = fmtPrice(last, coin);
-  document.getElementById('priceMain').style.color = COINS[coin].color;
-
-  const badge = document.getElementById('priceBadge');
-  badge.textContent = fmtPct(pct) + ' (1d)';
-  badge.className = 'price-badge ' + (pct >= 0 ? 'up' : 'down');
-
-  document.getElementById('priceRange').textContent =
-    `${dates[0]} → ${dates[dates.length-1]}  ·  ${fmtPct(total)} total`;
+  const last=prices[prices.length-1], prev=prices[prices.length-2]||last;
+  const pct=(last-prev)/prev*100, total=((last-prices[0])/prices[0]*100);
+  document.getElementById('priceMain').textContent=fmtPrice(last);
+  document.getElementById('priceMain').style.color=COINS[coin].color;
+  const badge=document.getElementById('priceBadge');
+  badge.textContent=fmtPct(pct)+' (1d)'; badge.className='price-badge '+(pct>=0?'up':'down');
+  document.getElementById('priceRange').textContent=`${dates[0]} → ${dates[dates.length-1]}  ·  ${fmtPct(total)} total`;
 }
 
-// ═══════════════════════════════════════════════
-//  MAIN LOAD FUNCTION
-// ═══════════════════════════════════════════════
+// ── MAIN LOAD ─────────────────────────────────────
 async function loadData() {
-  const loader  = document.getElementById('loader');
-  const errBox  = document.getElementById('errorBox');
-  const btnApply = document.getElementById('btnApply');
-
-  loader.style.display = 'flex';
-  errBox.style.display = 'none';
-  btnApply.disabled = true;
-
-  document.getElementById('loaderText').textContent = `Obteniendo datos de ${COINS[currentCoin].name}…`;
-
+  const loader=document.getElementById('loader'), errBox=document.getElementById('errorBox'), btn=document.getElementById('btnApply');
+  loader.style.display='flex'; errBox.style.display='none'; btn.disabled=true;
+  document.getElementById('loaderText').textContent=`Obteniendo datos de ${COINS[currentCoin].name}…`;
   try {
-    const dateFrom = document.getElementById('dateFrom').value;
-    const dateTo   = document.getElementById('dateTo').value;
+    const dateFrom=document.getElementById('dateFrom').value, dateTo=document.getElementById('dateTo').value;
+    if(!dateFrom||!dateTo) throw new Error('Seleccioná un rango de fechas válido.');
+    if(new Date(dateFrom)>=new Date(dateTo)) throw new Error('La fecha inicial debe ser anterior a la final.');
 
-    if (!dateFrom || !dateTo) throw new Error('Por favor selecciona un rango de fechas válido.');
-    if (new Date(dateFrom) >= new Date(dateTo)) throw new Error('La fecha inicial debe ser anterior a la fecha final.');
-
-    const fromTs = toUnix(dateFrom);
-    const toTs   = toUnix(dateTo) + 86400; // include last day
-
-    const cacheKey = `${currentCoin}_${dateFrom}_${dateTo}`;
-    let rawPrices;
-    if (cachedData[cacheKey]) {
-      rawPrices = cachedData[cacheKey];
-    } else {
-      rawPrices = await fetchPrices(COINS[currentCoin].id, fromTs, toTs);
-      cachedData[cacheKey] = rawPrices;
+    const cacheKey=`${currentCoin}_${dateFrom}_${dateTo}`;
+    let raw = cachedData[cacheKey];
+    if(!raw){
+      raw = await fetchPrices(COINS[currentCoin].id, dateFrom, dateTo);
+      cachedData[cacheKey]=raw;
     }
 
-    if (!rawPrices || rawPrices.length < 2) throw new Error('No hay datos suficientes para el rango seleccionado.');
+    let dates  = raw.map(d => new Date(d[0]).toISOString().split('T')[0]);
+    let prices = raw.map(d => parseFloat(d[4])); // d[4] = precio de cierre
 
-    // Extract arrays
-    let dates  = rawPrices.map(d => new Date(d[0]).toLocaleDateString('es-ES', {day:'2-digit',month:'2-digit',year:'2-digit'}));
-    let prices = rawPrices.map(d => d[1]);
+    const interval=document.getElementById('intervalSelect').value;
+    if(interval==='weekly'){ const ds=downsampleWeekly(dates,prices); dates=ds.dates; prices=ds.prices; }
 
-    // Downsample if weekly
-    const interval = document.getElementById('intervalSelect').value;
-    if (interval === 'weekly') {
-      const ds = downsampleWeekly(dates, prices);
-      dates  = ds.dates;
-      prices = ds.prices;
-    }
+    const ma7=calcMA(prices,7), ma25=calcMA(prices,25), ma99=calcMA(prices,99);
 
-    // Compute MAs
-    const ma7  = calcMA(prices, MA_PERIODS.MA7);
-    const ma25 = calcMA(prices, MA_PERIODS.MA25);
-    const ma99 = calcMA(prices, MA_PERIODS.MA99);
-
-    // Render everything
-    renderPriceHero(prices, dates, currentCoin);
-    buildChart(dates, prices, ma7, ma25, ma99, COINS[currentCoin].color);
-    renderStats(prices, dates, ma7, ma25, ma99, currentCoin);
+    renderPriceHero(prices,dates,currentCoin);
+    buildChart(dates,prices,ma7,ma25,ma99,COINS[currentCoin].color);
+    renderStats(prices,dates,ma7,ma25,ma99);
     renderLegend(currentCoin);
-    document.getElementById('chartTitle').textContent =
-      `${COINS[currentCoin].name} — Precio y Medias Móviles (${dates.length} velas)`;
-
-    const analysis = generateAnalysis(prices, dates, ma7, ma25, ma99, currentCoin);
-    renderAnalysis(analysis, currentCoin);
-
-    loader.style.display = 'none';
-
-  } catch (err) {
-    loader.style.display = 'none';
-    errBox.style.display = 'block';
-    let msg = err.message;
-    if (msg.includes('429')) msg = 'Límite de API alcanzado (CoinGecko). Espera 30 segundos e intenta de nuevo.';
-    if (msg.includes('Failed to fetch')) msg = 'No se pudo conectar con CoinGecko. Verifica tu conexión a internet.';
-    errBox.textContent = '⚠️ ' + msg;
-  } finally {
-    btnApply.disabled = false;
-  }
+    document.getElementById('chartTitle').textContent=`${COINS[currentCoin].name} — Precio de cierre y Medias Móviles (${dates.length} velas)`;
+    renderAnalysis(generateAnalysis(prices,dates,ma7,ma25,ma99,currentCoin),currentCoin);
+    loader.style.display='none';
+  } catch(err) {
+    loader.style.display='none';
+    errBox.style.display='block';
+    let msg=err.message;
+    if(msg.includes('429')) msg='Límite de API alcanzado. Esperá 60 segundos e intentá de nuevo.';
+    if(msg.includes('fetch')) msg='No se pudo conectar con la API. Verificá tu conexión a internet.';
+    errBox.textContent='⚠️ '+msg;
+  } finally { btn.disabled=false; }
 }
 
-// ═══════════════════════════════════════════════
-//  PDF EXPORT (html2canvas + jsPDF)
-// ═══════════════════════════════════════════════
+// ── PDF EXPORT ───────────────────────────────────
 document.getElementById('btnPDF').addEventListener('click', async () => {
-  const btn = document.getElementById('btnPDF');
-  btn.textContent = 'Generando PDF…';
-  btn.disabled = true;
+  const btn=document.getElementById('btnPDF');
+  btn.textContent='Generando PDF…'; btn.disabled=true;
   try {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-    const coin = COINS[currentCoin];
-
-    // Title page header
-    doc.setFillColor(13, 17, 23);
-    doc.rect(0, 0, 297, 210, 'F');
-    doc.setTextColor(230, 237, 243);
-    doc.setFontSize(22);
-    doc.text(`${coin.name} (${coin.symbol}) — Análisis de Medias Móviles`, 15, 20);
-    doc.setFontSize(10);
-    doc.setTextColor(139, 148, 158);
-    doc.text(`Generado: ${new Date().toLocaleString('es-ES')} · Fuente: CoinGecko`, 15, 28);
-
-    // Capture chart
-    const chartEl = document.getElementById('chartCard');
-    const canvas = await html2canvas(chartEl, {
-      backgroundColor: '#161b22',
-      scale: 2,
-      useCORS: true,
-      logging: false
-    });
-    const imgData = canvas.toDataURL('image/png');
-    const ratio = canvas.width / canvas.height;
-    const imgW = 267;
-    const imgH = imgW / ratio;
-    doc.addImage(imgData, 'PNG', 15, 35, imgW, Math.min(imgH, 120));
-
-    // Analysis text
+    const {jsPDF}=window.jspdf;
+    const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+    const coin=COINS[currentCoin];
+    doc.setFillColor(13,17,23); doc.rect(0,0,297,210,'F');
+    doc.setTextColor(230,237,243); doc.setFontSize(20);
+    doc.text(`${coin.name} (${coin.symbol}) — Análisis de Medias Móviles`,15,20);
+    doc.setFontSize(9); doc.setTextColor(139,148,158);
+    doc.text(`Generado: ${new Date().toLocaleString('es-ES')} · Fuente: Binance API`,15,28);
+    const canvas=await html2canvas(document.getElementById('chartCard'),{backgroundColor:'#161b22',scale:2,useCORS:true,logging:false});
+    const imgData=canvas.toDataURL('image/png');
+    const ratio=canvas.width/canvas.height, imgW=267, imgH=Math.min(imgW/ratio,120);
+    doc.addImage(imgData,'PNG',15,35,imgW,imgH);
     doc.addPage();
-    doc.setFillColor(13, 17, 23);
-    doc.rect(0, 0, 297, 210, 'F');
-    doc.setFontSize(14);
-    doc.setTextColor(230, 237, 243);
-    doc.text('Análisis Automático', 15, 20);
-
-    const bodyEl = document.getElementById('analysisBody');
-    const analysisText = bodyEl.innerText || bodyEl.textContent;
-    const sentimentEl = document.getElementById('sentimentBadge');
-    doc.setFontSize(11);
-    doc.setTextColor(100, 200, 100);
-    doc.text('Tendencia: ' + (sentimentEl.textContent || ''), 15, 30);
-
-    doc.setFontSize(9);
-    doc.setTextColor(200, 207, 213);
-    const splitText = doc.splitTextToSize(analysisText, 265);
-    doc.text(splitText, 15, 42);
-
-    // Stats
-    const statsCards = document.querySelectorAll('.stat-card');
-    let sx = 15, sy = 42 + splitText.length * 5 + 10;
-    if (sy < 100) sy = 100;
-    doc.setFontSize(8);
-    doc.setTextColor(139, 148, 158);
-    statsCards.forEach((card, i) => {
-      if (sx + 35 > 290) { sx = 15; sy += 28; }
-      doc.setFillColor(22, 27, 34);
-      doc.roundedRect(sx, sy, 33, 22, 2, 2, 'F');
-      doc.setTextColor(139, 148, 158);
-      doc.text(card.querySelector('.stat-label').textContent, sx + 2, sy + 6);
-      const valEl = card.querySelector('.stat-value');
-      const isUp = valEl.classList.contains('up');
-      const isDown = valEl.classList.contains('down');
-      doc.setTextColor(isUp ? 63 : isDown ? 248 : 230, isUp ? 185 : isDown ? 81 : 237, isUp ? 80 : isDown ? 73 : 243);
-      doc.setFontSize(9);
-      doc.text(valEl.textContent.slice(0,14), sx + 2, sy + 14);
-      doc.setFontSize(8);
-      sx += 36;
-    });
-
-    // Footer
-    const totalPages = doc.getNumberOfPages();
-    for (let i = 1; i <= totalPages; i++) {
-      doc.setPage(i);
-      doc.setFontSize(7);
-      doc.setTextColor(60, 70, 80);
-      doc.text(`Crypto MA Dashboard · ${coin.name} · Página ${i}/${totalPages}`, 15, 205);
-      doc.text('Datos: CoinGecko API · Solo para fines informativos, no constituye asesoría financiera.', 15, 209);
+    doc.setFillColor(13,17,23); doc.rect(0,0,297,210,'F');
+    doc.setFontSize(14); doc.setTextColor(230,237,243); doc.text('Análisis Automático',15,20);
+    doc.setFontSize(9); doc.setTextColor(100,200,100);
+    doc.text('Tendencia: '+(document.getElementById('sentimentBadge').textContent||''),15,30);
+    doc.setTextColor(200,207,213);
+    const txt=document.getElementById('analysisBody').innerText||'';
+    doc.text(doc.splitTextToSize(txt,265),15,42);
+    const totalPages=doc.getNumberOfPages();
+    for(let i=1;i<=totalPages;i++){
+      doc.setPage(i); doc.setFontSize(7); doc.setTextColor(60,70,80);
+      doc.text(`Crypto MA Dashboard · ${coin.name} · Pág ${i}/${totalPages}`,15,205);
+      doc.text('Solo fines informativos, no constituye asesoría financiera.',15,209);
     }
-
-    doc.save(`${coin.symbol}_MA_Dashboard_${new Date().toISOString().split('T')[0]}.pdf`);
-  } catch (e) {
-    alert('Error generando PDF: ' + e.message);
-  } finally {
-    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg> Exportar PDF al Escritorio`;
-    btn.disabled = false;
-  }
+    doc.save(`${coin.symbol}_MA_${new Date().toISOString().split('T')[0]}.pdf`);
+  } catch(e){ alert('Error generando PDF: '+e.message); }
+  finally { btn.innerHTML=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg> Exportar PDF`; btn.disabled=false; }
 });
 
-// Print fallback
-document.getElementById('btnPrint').addEventListener('click', () => {
-  window.print();
-});
+document.getElementById('btnPrint').addEventListener('click',()=>window.print());
 
-// ═══════════════════════════════════════════════
-//  MA TOGGLES
-// ═══════════════════════════════════════════════
-document.querySelectorAll('.ma-toggle').forEach(label => {
-  label.addEventListener('click', () => {
-    const ma = label.dataset.ma;
-    maToggles[ma] = !maToggles[ma];
-    label.classList.toggle('on',  maToggles[ma]);
-    label.classList.toggle('off', !maToggles[ma]);
-    if (chartInstance) {
-      chartInstance.data.datasets.forEach(ds => {
-        if (ds.label === ma) ds.hidden = !maToggles[ma];
-      });
-      chartInstance.update();
-    }
+// ── MA TOGGLES ───────────────────────────────────
+document.querySelectorAll('.ma-toggle').forEach(label=>{
+  label.addEventListener('click',()=>{
+    const ma=label.dataset.ma; maToggles[ma]=!maToggles[ma];
+    label.classList.toggle('on',maToggles[ma]); label.classList.toggle('off',!maToggles[ma]);
+    if(chartInstance){ chartInstance.data.datasets.forEach(ds=>{ if(ds.label===ma) ds.hidden=!maToggles[ma]; }); chartInstance.update(); }
   });
 });
 
-// ═══════════════════════════════════════════════
-//  COIN TABS
-// ═══════════════════════════════════════════════
-document.querySelectorAll('.coin-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.coin-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    currentCoin = tab.dataset.coin;
-    loadData();
+// ── COIN TABS ────────────────────────────────────
+document.querySelectorAll('.coin-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.coin-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active'); currentCoin=tab.dataset.coin; cachedData={}; loadData();
   });
 });
 
-// ═══════════════════════════════════════════════
-//  APPLY BUTTON
-// ═══════════════════════════════════════════════
-document.getElementById('btnApply').addEventListener('click', () => {
-  cachedData = {}; // clear cache when dates change
-  loadData();
-});
-
+document.getElementById('btnApply').addEventListener('click',()=>{ cachedData={}; loadData(); });
 document.getElementById('intervalSelect').addEventListener('change', loadData);
 
-// ═══════════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════════
 initDates();
 loadData();
 </script>
