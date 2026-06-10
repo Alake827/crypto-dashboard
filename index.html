@@ -214,9 +214,9 @@
 <script>
 // ── CONFIG ──────────────────────────────────────
 const COINS = {
-  BTC:  { id: 'BTC',  symbol: 'BTC',  name: 'Bitcoin',  color: '#f7931a' },
-  ETH:  { id: 'ETH',  symbol: 'ETH',  name: 'Ethereum', color: '#627eea' },
-  PAXG: { id: 'PAXG', symbol: 'PAXG', name: 'PAX Gold', color: '#e6c840' }
+  BTC:  { id: 'BTC-USD',  symbol: 'BTC',  name: 'Bitcoin',  color: '#f7931a' },
+  ETH:  { id: 'ETH-USD',  symbol: 'ETH',  name: 'Ethereum', color: '#627eea' },
+  PAXG: { id: 'PAXG-USD', symbol: 'PAXG', name: 'PAX Gold', color: '#e6c840' }
 };
 const MA_COLORS  = { MA7: '#58a6ff', MA25: '#f0883e', MA99: '#bc8cff' };
 const MA_PERIODS = { MA7: 7, MA25: 25, MA99: 99 };
@@ -236,24 +236,41 @@ function initDates() {
 }
 function fmtDate(d) { return d.toISOString().split('T')[0]; }
 
-// ── FETCH — CryptoCompare (gratis, sin clave, CORS ok) ──
-async function fetchPrices(symbol, startDate, endDate) {
-  const start  = new Date(startDate);
-  const end    = new Date(endDate);
-  const days   = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-  const toTs   = Math.floor(end.getTime() / 1000);
-  const limit  = Math.min(days, 2000);
+// ── FETCH — Coinbase Exchange API (CORS nativo, sin clave, funciona en Safari) ──
+async function fetchPrices(productId, startDate, endDate) {
+  const DAY_MS  = 86400000;
+  const MAX_CANDLES = 295; // límite seguro por request en Coinbase
+  const startTs = new Date(startDate).getTime();
+  const endTs   = new Date(endDate + 'T23:59:59Z').getTime();
 
-  const url = `https://min-api.cryptocompare.com/data/v2/histoday?fsym=${symbol}&tsym=USD&limit=${limit}&toTs=${toTs}`;
-  const res  = await fetch(url);
-  if (!res.ok) throw new Error(`API error ${res.status}`);
-  const json = await res.json();
-  if (json.Response === 'Error') throw new Error(json.Message || 'Error al obtener datos.');
+  let allData = [];
+  let chunkEnd = endTs;
 
-  const startTs = Math.floor(start.getTime() / 1000);
-  const data = json.Data.Data.filter(d => d.time >= startTs && d.close > 0);
-  if (!data || data.length === 0) throw new Error('Sin datos para el rango seleccionado.');
-  return data; // [{ time, open, high, low, close, volumefrom, volumeto }, ...]
+  // Paginación: pedimos de atrás hacia adelante en bloques de MAX_CANDLES días
+  while (chunkEnd > startTs) {
+    const chunkStart = Math.max(startTs, chunkEnd - MAX_CANDLES * DAY_MS);
+    const startISO   = new Date(chunkStart).toISOString();
+    const endISO     = new Date(chunkEnd).toISOString();
+
+    const url = `https://api.exchange.coinbase.com/products/${productId}/candles?granularity=86400&start=${startISO}&end=${endISO}`;
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error(`Coinbase API error ${res.status} para ${productId}. Verificá tu conexión.`);
+
+    const chunk = await res.json();
+    if (Array.isArray(chunk)) allData = allData.concat(chunk);
+    chunkEnd = chunkStart - 1;
+  }
+
+  if (!allData.length) throw new Error('Sin datos para el rango seleccionado.');
+
+  // Deduplicar y ordenar por tiempo ascendente
+  const seen = new Set();
+  allData = allData
+    .filter(d => { if (seen.has(d[0])) return false; seen.add(d[0]); return true; })
+    .sort((a, b) => a[0] - b[0]);
+
+  return allData;
+  // Formato Coinbase: [timestamp_seg, low, high, open, close, volume]
 }
 
 // ── MA ───────────────────────────────────────────
@@ -471,15 +488,15 @@ async function loadData() {
     if(!dateFrom||!dateTo) throw new Error('Seleccioná un rango de fechas válido.');
     if(new Date(dateFrom)>=new Date(dateTo)) throw new Error('La fecha inicial debe ser anterior a la final.');
 
-    const cacheKey=`${currentCoin}_${dateFrom}_${dateTo}`;
+    const cacheKey = `${currentCoin}_${dateFrom}_${dateTo}`;
     let raw = cachedData[cacheKey];
-    if(!raw){
+    if (!raw) {
       raw = await fetchPrices(COINS[currentCoin].id, dateFrom, dateTo);
-      cachedData[cacheKey]=raw;
+      cachedData[cacheKey] = raw;
     }
 
-    let dates  = raw.map(d => new Date(d.time * 1000).toISOString().split('T')[0]);
-    let prices = raw.map(d => d.close);
+    let dates  = raw.map(d => new Date(d[0] * 1000).toISOString().split('T')[0]);
+    let prices = raw.map(d => parseFloat(d[4])); // Coinbase: [ts, low, high, open, close, vol]
 
     const interval=document.getElementById('intervalSelect').value;
     if(interval==='weekly'){ const ds=downsampleWeekly(dates,prices); dates=ds.dates; prices=ds.prices; }
@@ -515,7 +532,7 @@ document.getElementById('btnPDF').addEventListener('click', async () => {
     doc.setTextColor(230,237,243); doc.setFontSize(20);
     doc.text(`${coin.name} (${coin.symbol}) — Análisis de Medias Móviles`,15,20);
     doc.setFontSize(9); doc.setTextColor(139,148,158);
-    doc.text(`Generado: ${new Date().toLocaleString('es-ES')} · Fuente: CryptoCompare API`,15,28);
+    doc.text(`Generado: ${new Date().toLocaleString('es-ES')} · Fuente: Binance API`,15,28);
     const canvas=await html2canvas(document.getElementById('chartCard'),{backgroundColor:'#161b22',scale:2,useCORS:true,logging:false});
     const imgData=canvas.toDataURL('image/png');
     const ratio=canvas.width/canvas.height, imgW=267, imgH=Math.min(imgW/ratio,120);
@@ -566,4 +583,5 @@ loadData();
 </script>
 </body>
 </html>
+
 
